@@ -17,9 +17,29 @@ const UserSchema = mongoose.Schema({
         type : String,
         require : false
     },
+    gender: {
+        type: String,
+        require: true
+    },
+    age : {
+        type: Number,
+        require: true
+    },
+    weight : {
+        type: Number,
+        require: true
+    },
+    height : {
+        type: Number,
+        require: true
+    },
     verified : {
         type : Boolean,
         default : false
+    },
+    otp: {
+        type: Number,
+        require: false
     }
 }, {timestamps : true});
 
