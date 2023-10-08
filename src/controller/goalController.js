@@ -9,7 +9,7 @@ const createGoal = async (req, res) => {
         const saveGoal = await newGoal.save();
 
         if(!saveGoal) {
-            throw "contact not create"    
+            throw "goal not create"    
         }
 
         res.status(201).json({
