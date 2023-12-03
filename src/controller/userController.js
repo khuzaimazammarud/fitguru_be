@@ -38,7 +38,7 @@ const signup = async (req, res) => {
 
         });
 
-        const token = jwt.sign({ email: result.email, id: result._id }, SECRET_KEY);
+        const token = jwt.sign({ email: result.email, id: result._id, name: result.username }, SECRET_KEY);
         res.status(201).json({ user: result, token: token, message: 'Account is Created' });
 
     } catch (error) {
@@ -48,6 +48,7 @@ const signup = async (req, res) => {
 
 const signin = async (req, res) => {
     const { email, password } = req.body;
+    console.log("🚀 ~ file: userController.js:51 ~ signin ~ req.body:", req.body)
 
     try {
         const existingUser = await userModel.findOne({ email: email });
@@ -60,7 +61,7 @@ const signin = async (req, res) => {
             return res.status(404).json({ message: "invalid username or passowrd" });
         }
 
-        const token = jwt.sign({ email: existingUser.email, id: existingUser._id }, SECRET_KEY);
+        const token = jwt.sign({ email: existingUser.email, id: existingUser._id, name: existingUser.username }, SECRET_KEY);
         res.status(200).json({ user: existingUser, token: token, message: "Login successfull" });
 
     } catch (error) {
