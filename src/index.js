@@ -1,9 +1,11 @@
+require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
 const passport = require("passport");
 require("./../db/connection");
 const userRouter = require("./routes/userRoutes");
 const goalRouter = require("./routes/goalRoutes");
+const foodRouter = require("./routes/foodRoutes");
 const app = express();
 
 app.use(cors());
@@ -21,5 +23,6 @@ app.use((req, res, next) => {
 
 app.use("/users", userRouter);
 app.use("/goals", goalRouter);
+app.use("/food", foodRouter);
 
 app.listen(3001);
