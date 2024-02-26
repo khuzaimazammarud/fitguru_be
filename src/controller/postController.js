@@ -2,6 +2,7 @@ const PostModel = require("../models/post");
 const UserModel = require("../models/user");
 
 const createPost = async (req, res) => {
+    const imageURL = req.file ? req.file.path : null;
     const { authorId, content } = req.body;
 
     try {
@@ -14,7 +15,8 @@ const createPost = async (req, res) => {
 
         const newPost = new PostModel({
             author: authorId,
-            content
+            content,
+            picture: `/uploads/images/${req.file.filename}`
         });
 
         const savedPost = await newPost.save();
