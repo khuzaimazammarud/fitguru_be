@@ -2,8 +2,6 @@ const GoalModel = require("../models/goal");
 
 const createGoal = async (req, res) => {
     const dailygoal = req.body;
-    console.log("🚀 ~ file: goalController.js:5 ~ createGoal ~ req.body:", req.body)
-
     try {
         const newGoal = new GoalModel(dailygoal);
         const saveGoal = await newGoal.save();
@@ -16,7 +14,6 @@ const createGoal = async (req, res) => {
             success : "goal created"
         })
     }catch(error) { 
-        console.log("🚀 ~ file: goalController.js:19 ~ createGoal ~ error:", error)
         res.status(400).json(error);
     }
 }
