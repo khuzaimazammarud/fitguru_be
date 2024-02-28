@@ -1,22 +1,31 @@
 const PostModel = require("../models/post");
 const UserModel = require("../models/user");
+const axios = require("axios")
+
 
 const createPost = async (req, res) => {
-    const imageURL = req.file ? req.file.path : null;
+    const imageURL = req.cloudinary.url ? req.cloudinary.url : null;
     const { authorId, content } = req.body;
 
     try {
-
         const user = await UserModel.findById(authorId);
 
         if (!user) {
             throw 'No User found';
         }
 
+        const payload = {
+            text : content
+        }
+        const response = await axios.post(`http://127.0.0.1:8000/predict`, payload);
+        if(!response.data.is_fitness_related) {
+            throw "Ony fitness related posts are allowed"
+        }
+        
         const newPost = new PostModel({
             author: authorId,
             content,
-            picture: `/uploads/images/${req.file.filename}`
+            picture: imageURL
         });
 
         const savedPost = await newPost.save();
