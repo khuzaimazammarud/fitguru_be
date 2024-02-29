@@ -1,7 +1,7 @@
 const express = require("express");
 const passport = require("passport");
 const { singleFileUpload } = require("../middleware/multerConfig");
-const { createPost, getPost, editPost, deletePost, getPostByID, getPostByFollowing } = require("../controller/postController");
+const { createPost, getPost, editPost, deletePost, getPostByID, getPostByFollowing, getPostByUserId } = require("../controller/postController");
 const { cloudinaryUpload } = require("../middleware/cloudinary");
 
 
@@ -15,5 +15,6 @@ postRouter.delete("/delete/:id", passport.authenticate('jwt', { session: false }
 postRouter.get("/", passport.authenticate('jwt', { session: false }), getPost);
 postRouter.get("/:id", passport.authenticate('jwt', { session: false }), getPostByID);
 postRouter.get("/follower/:userId", passport.authenticate('jwt', { session: false }), getPostByFollowing);
+postRouter.get("/currentUser/:userId", passport.authenticate('jwt', { session: false }), getPostByUserId);
 
 module.exports = postRouter;

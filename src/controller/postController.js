@@ -15,13 +15,13 @@ const createPost = async (req, res) => {
         }
 
         const payload = {
-            text : content
+            text: content
         }
         const response = await axios.post(`http://127.0.0.1:8000/predict`, payload);
-        if(!response.data.is_fitness_related) {
+        if (!response.data.is_fitness_related) {
             throw "Ony fitness related posts are allowed"
         }
-        
+
         const newPost = new PostModel({
             author: authorId,
             content,
@@ -115,11 +115,37 @@ const getPostByFollowing = async (req, res) => {
     }
 }
 
+
+const getPostByUserId = async (req, res) => {
+    try {
+        const user = await UserModel.findById(req.params.userId);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const posts = await PostModel.find({ author: user._id });
+
+        if (!posts) {
+            throw 'Post not found';
+        }
+
+        res.status(200).json({
+            message: 'Posts retrieved successfully',
+            posts,
+        });
+
+    } catch (error) {
+        res.status(500).json({ message: error.toString() });
+    }
+}
+
 module.exports = {
     createPost,
     editPost,
     getPost,
     deletePost,
     getPostByID,
-    getPostByFollowing
+    getPostByFollowing,
+    getPostByUserId
 };

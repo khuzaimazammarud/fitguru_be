@@ -8,6 +8,7 @@ const userRouter = require("./routes/userRoutes");
 const goalRouter = require("./routes/goalRoutes");
 const foodRouter = require("./routes/foodRoutes");
 const postRouter = require('./routes/postRoutes');
+const commentRouter = require('./routes/commentRoutes');
 
 const app = express();
 
@@ -24,5 +25,6 @@ app.use("/users", userRouter);
 app.use("/goals", goalRouter);
 app.use("/food", foodRouter);
 app.use("/posts", postRouter);
+app.use("/comment", commentRouter);
 
 app.listen(3001);
