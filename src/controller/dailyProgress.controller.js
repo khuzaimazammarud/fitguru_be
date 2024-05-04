@@ -43,14 +43,14 @@ const getEntryInDateRange = async (req, res) => {
       {
         $match: {
           goal: new mongoose.Types.ObjectId(goal),
-          createdAt: { $gte: startDate, $lte: endDate },
+          createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) },
         },
       },
       {
         $group: {
-          _id: { goal: "$goal", date: "$date" },
+          _id: { goal: "$goal", date: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } } },
           fats: { $sum: "$fats" },
-          proteins: { $sum: "$proteins" },
+          proteins: { $sum: "$protein" },
           carbs: { $sum: "$carbs" },
           calories: { $sum: "$calories" },
         },
@@ -66,7 +66,7 @@ const getEntryInDateRange = async (req, res) => {
           date: "$_id.date",
         },
       },
-    ]);
+    ]);    
 
     res.status(200).json({ data: getEntry });
   } catch (error) {
