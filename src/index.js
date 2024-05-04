@@ -9,6 +9,7 @@ const goalRouter = require("./routes/goalRoutes");
 const foodRouter = require("./routes/foodRoutes");
 const postRouter = require('./routes/postRoutes');
 const commentRouter = require('./routes/commentRoutes');
+const dailyPorgressRoute = require('./routes/dailyProgressRoutes');
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use((req, res, next) => {
 
 app.use("/users", userRouter);
 app.use("/goals", goalRouter);
+app.use("/progress", dailyPorgressRoute)
 app.use("/food", foodRouter);
 app.use("/posts", postRouter);
 app.use("/comment", commentRouter);

@@ -1,9 +1,11 @@
 "use strict";
 
 const dailyProgressModel = require("../models/dailyProgress");
+const mongoose = require("mongoose");
 
 const logEntry = async (req, res) => {
   try {
+    console.log("hello");
     const { goal, timeOfDay, calories, protein, fats, carbs } = req.body;
     const newEntry = new dailyProgressModel({
       goal,
@@ -40,7 +42,7 @@ const getEntryInDateRange = async (req, res) => {
     const getEntry = await dailyProgressModel.aggregate([
       {
         $match: {
-          goal: mongoose.Types.ObjectId(goal),
+          goal: new mongoose.Types.ObjectId(goal),
           createdAt: { $gte: startDate, $lte: endDate },
         },
       },
