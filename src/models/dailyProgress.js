@@ -28,6 +28,10 @@ const DailyProgressSchema = mongoose.Schema(
       type: Number,
       required: true,
     },
+    foods: {
+      type: Array,
+      required: true,
+    }
   },
   {
     timestamps: true,

@@ -6,7 +6,7 @@ const mongoose = require("mongoose");
 const logEntry = async (req, res) => {
   try {
     console.log("hello");
-    const { goal, timeOfDay, calories, protein, fats, carbs } = req.body;
+    const { goal, timeOfDay, calories, protein, fats, carbs, foods } = req.body;
     const newEntry = new dailyProgressModel({
       goal,
       timeOfDay,
@@ -14,6 +14,7 @@ const logEntry = async (req, res) => {
       protein,
       fats,
       carbs,
+      foods,
     });
     const saveEntry = await newEntry.save();
     res.status(201).json({
@@ -53,6 +54,7 @@ const getEntryInDateRange = async (req, res) => {
           proteins: { $sum: "$protein" },
           carbs: { $sum: "$carbs" },
           calories: { $sum: "$calories" },
+          foods: { $addToSet: "$foods" },
         },
       },
       {
@@ -63,6 +65,7 @@ const getEntryInDateRange = async (req, res) => {
           proteins: 1,
           carbs: 1,
           calories: 1,
+          foods: { $reduce: { input: "$foods", initialValue: [], in: { $concatArrays: ["$$value", "$$this"] } } },
           date: "$_id.date",
         },
       },
