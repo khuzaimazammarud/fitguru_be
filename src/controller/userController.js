@@ -20,6 +20,37 @@ function calculateBMR(user) {
     : 10 * weight + 6.25 * height - 5 * age - 161;
 }
 
+function calculateTDEE(bmr, activityFactor) {
+  return bmr * activityFactor;
+}
+
+function determineGoal(currentWeight, targetWeight) {
+  if (currentWeight === targetWeight) return "maintain";
+  if (currentWeight < targetWeight) return "gainWeight";
+  return "loseWeight";
+}
+
+function calculateMacros(tdee, goal) {
+  let proteinRatio = 0.3;
+  let fatRatio = 0.3;
+  let carbRatio = 0.4;
+
+  if (goal === "loseWeight") {
+    proteinRatio = 0.4;
+    fatRatio = 0.3;
+    carbRatio = 0.3;
+  } else if (goal === "gainWeight") {
+    proteinRatio = 0.35;
+    fatRatio = 0.25;
+    carbRatio = 0.4;
+  }
+
+  const dailyProtein = Math.round(tdee * proteinRatio / 4);
+  const dailyFat = Math.round(tdee * fatRatio / 9);
+  const dailyCarbs = Math.round(tdee * carbRatio / 4);
+
+  return { dailyProtein, dailyFat, dailyCarbs };
+}
 const signup = async (req, res) => {
   const {
     username,
@@ -61,13 +92,8 @@ const signup = async (req, res) => {
     else if (activityLevel === "veryActive") activityFactor = 1.725;
     else if (activityLevel === "extremelyActive") activityFactor = 1.9;
 
-    const dailyCalories = Math.round(bmr * activityFactor);
-    const determineGoal = (currentWeight, targetWeight) => {
-        if (currentWeight === targetWeight) return "maintain";
-        if (currentWeight < targetWeight) return "gainWeight";
-        return "loseWeight";
-    };
-    const goal = determineGoal(result.weight, req.body.targetWeight);  
+    const tdee = calculateTDEE(bmr, activityFactor);
+    const goal = determineGoal(result.weight, req.body.targetWeight);
 
     let calorieDeficit = 0;
     let calorieSurplus = 0;
@@ -76,22 +102,18 @@ const signup = async (req, res) => {
 
     const adjustedCalories =
       goal === "maintain"
-        ? dailyCalories
-        : dailyCalories +
-          (goal === "loseWeight" ? -calorieDeficit : calorieSurplus);
+        ? tdee
+        : tdee + (goal === "loseWeight" ? -calorieDeficit : calorieSurplus);
 
-    const macroRatio = { protein: 0.3, fat: 0.3, carbs: 0.4 };
-    const dailyProtein = Math.round(adjustedCalories * macroRatio.protein);
-    const dailyFat = Math.round(adjustedCalories * macroRatio.fat);
-    const dailyCarbs = Math.round(adjustedCalories * macroRatio.carbs);
+    const { dailyProtein, dailyFat, dailyCarbs } = calculateMacros(adjustedCalories, goal);
 
     const newGoal = new goalModel({
       user: result._id,
-      dailyCalories: adjustedCalories,
+      dailyCalories: Math.round(adjustedCalories),
       dailyProtein,
       dailyFat,
       dailyCarbs,
-      targetWeight: 60,
+      targetWeight: req.body.targetWeight,
     });
     await newGoal.save();
 
@@ -101,15 +123,19 @@ const signup = async (req, res) => {
     );
     res
       .status(201)
-      .json({ user: result, goal: newGoal, token, message: "Account is Created" });
+      .json({
+        user: result,
+        goal: newGoal,
+        token,
+        message: "Account is Created",
+      });
   } catch (error) {
-    res.status(500).json({ message: "something went wrong"});
+    res.status(500).json({ message: "something went wrong" });
   }
 };
 
 const signin = async (req, res) => {
   const { email, password } = req.body;
-  console.log("🚀 ~ file: userController.js:51 ~ signin ~ req.body:", req.body);
 
   try {
     const existingUser = await userModel.findOne({ email: email });
@@ -122,17 +148,23 @@ const signin = async (req, res) => {
       return res.status(404).json({ message: "invalid username or passowrd" });
     }
 
+    // Find the goal associated with the user
+    const goal = await goalModel.findOne({ user: existingUser._id });
+    const goalId = goal ? goal._id : null;
+
     const token = jwt.sign(
       {
         email: existingUser.email,
         id: existingUser._id,
         name: existingUser.username,
+        goalId,
       },
       SECRET_KEY
     );
+
     res
       .status(200)
-      .json({ user: existingUser, token: token, message: "Login successfull" });
+      .json({ user: existingUser, token, message: "Login successfull" });
   } catch (error) {
     console.log("🚀 ~ file: userController.js:47 ~ signin ~ error:", error);
     res.status(500).json({ message: "something went wrong" });

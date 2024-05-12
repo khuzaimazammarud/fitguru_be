@@ -1,25 +1,36 @@
 const GoalModel = require("../models/goal");
 
 const createGoal = async (req, res) => {
-    const dailygoal = req.body;
-    try {
-        const newGoal = new GoalModel(dailygoal);
-        const saveGoal = await newGoal.save();
+  const dailygoal = req.body;
+  try {
+    const newGoal = new GoalModel(dailygoal);
+    const saveGoal = await newGoal.save();
 
-        if(!saveGoal) {
-            throw "goal not create"    
-        }
-
-        res.status(201).json({
-            success : "goal created"
-        })
-    }catch(error) { 
-        res.status(400).json(error);
+    if (!saveGoal) {
+      throw "goal not create";
     }
-}
 
-const getGoal = (req, res) => {
-    res.status(200).json({message : "helo motto"});
-}
+    res.status(201).json({
+      success: "goal created",
+    });
+  } catch (error) {
+    res.status(400).json(error);
+  }
+};
 
-module.exports = {createGoal, getGoal};
+const getGoalByUserId = async (req, res) => {
+  const userId = req.params.id;
+  try {
+    const goal = await GoalModel.findOne({ user: userId });
+
+    if (!goal) {
+      throw "goal not found";
+    }
+
+    res.status(200).json({ goal });
+  } catch (error) {
+    res.status(400).json(error);
+  }
+};
+
+module.exports = { createGoal, getGoalByUserId };
