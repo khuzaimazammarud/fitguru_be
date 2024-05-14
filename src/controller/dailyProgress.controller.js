@@ -94,7 +94,8 @@ const getEntry = async (req, res) => {
 const getEntryInDateRange = async (req, res) => {
   try {
     const { goal, startDate, endDate } = req.body;
-
+    console.log("🚀 ~ getEntryInDateRange ~ endDate:", endDate)
+  
     const getEntry = await dailyProgressModel.aggregate([
       {
         $match: {
@@ -229,7 +230,7 @@ const getTotals = async (req, res) => {
       totalProtein += entry.protein;
       totalFats += entry.fats;
       totalCarbs += entry.carbs;
-      allFoods.push(...entry.foods.map(food => ({ ...food, entryId: entry._id })));
+      allFoods.push(...entry.foods.map(food => ({ ...food, entryId: entry._id, timeOfDay: entry.timeOfDay })));
     });
 
     // Find the goal document

@@ -8,7 +8,7 @@ require("../middleware/passport")(passport);
 const dailyPorgressRoute = express.Router();
 
 dailyPorgressRoute.post("", passport.authenticate('jwt', { session: false }), logEntry);
-dailyPorgressRoute.get("", passport.authenticate('jwt', { session: false }), getEntryInDateRange);
+dailyPorgressRoute.post("/report", passport.authenticate('jwt', { session: false }), getEntryInDateRange);
 dailyPorgressRoute.delete("/:id", passport.authenticate('jwt', { session: false }), deleteEntry);
 dailyPorgressRoute.get("/total/:goalId", passport.authenticate('jwt', { session: false }), getTotals);
 

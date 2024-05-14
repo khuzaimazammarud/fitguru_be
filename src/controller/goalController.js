@@ -21,7 +21,7 @@ const createGoal = async (req, res) => {
 const getGoalByUserId = async (req, res) => {
   const userId = req.params.id;
   try {
-    const goal = await GoalModel.findOne({ user: userId });
+    const goal = await GoalModel.findOne({ user: userId }).populate('user', 'weight');
 
     if (!goal) {
       throw "goal not found";

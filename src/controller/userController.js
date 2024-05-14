@@ -272,10 +272,30 @@ const updatePassword = async (req, res) => {
   }
 };
 
+const updateWeight =  async(req, res) => {
+  const { weight } = req.body;
+  try {
+    const existingUser = await userModel.findById({ _id: req.params.id });
+    if (!existingUser) {
+      throw "No User found";
+    }
+    const updateUser = await userModel.updateOne(
+      { _id: req.params.id },
+      { weight }
+    );
+    if (updateUser) {
+      res.status(200).json({ message: "Weight changed" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.toString() });
+  }
+}
+
 module.exports = {
   signup,
   signin,
   sendEmail,
   verifyOtp,
   updatePassword,
+  updateWeight
 };
